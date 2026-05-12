@@ -42,7 +42,7 @@ async function init(url) {
     initialCameraLookAt,
   });
 
-  await viewer.loadFile(url, {
+  await viewer.addSplatScene(url, {
     splatAlphaRemovalThreshold: 5,
     onProgress: (progress) => {
       // progress may be 0–100 or 0–1 depending on the library version
