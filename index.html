@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="dark">
+  <title>Gaussian Splat Viewer</title>
+  <link rel="stylesheet" href="style.css">
+  <!--
+    iframe embedding:
+    <iframe src="index.html?url=https://example.com/scene.splat" allow="fullscreen" style="width:100%;height:100%;border:none;"></iframe>
+
+    Optional URL params:
+      url      (required) – URL of the .splat or .ply file
+      camPos   – camera position as x,y,z  (default: -1,-4,6)
+      camLook  – camera look-at as x,y,z   (default: 0,0,0)
+
+    The splat host must allow CORS from the embedding origin.
+  -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+      "@mkkellogg/gaussian-splats-3d": "https://cdn.jsdelivr.net/npm/@mkkellogg/gaussian-splats-3d/build/gaussian-splats-3d.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="progress-wrap"><div id="progress-bar"></div></div>
+  <div id="hint" aria-hidden="true"></div>
+  <div id="error-msg" role="alert" hidden></div>
+  <script type="module" src="viewer.js"></script>
+</body>
+</html>
