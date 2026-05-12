@@ -14,7 +14,8 @@ html, body {
 
 /* GaussianSplats3D appends a canvas directly to body */
 canvas {
-  display: block;
+  position: fixed !important;
+  inset: 0 !important;
   touch-action: none; /* give Three.js OrbitControls full touch ownership */
 }
 

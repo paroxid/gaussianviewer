@@ -10,16 +10,18 @@ const progressBar  = document.getElementById('progress-bar');
 const hintEl       = document.getElementById('hint');
 const errorEl      = document.getElementById('error-msg');
 
+// Catch any errors (including those from workers) that escape the Promise chain
+window.addEventListener('error', e => showError(`JS error:\n${e.message}`));
+window.addEventListener('unhandledrejection', e =>
+  showError(`Unhandled error:\n${e.reason?.message ?? e.reason}`)
+);
+
 function parseVec3(str, fallback) {
   if (!str) return fallback;
   const parts = str.split(',').map(Number);
   return parts.length === 3 && parts.every(isFinite) ? parts : fallback;
 }
 
-const initialCameraPosition = parseVec3(camPosParam,  [-1, -4, 6]);
-const initialCameraLookAt   = parseVec3(camLookParam, [0, 0, 0]);
-
-// Show the appropriate controls hint for the device type
 const isTouch = navigator.maxTouchPoints > 0;
 hintEl.textContent = isTouch
   ? 'Drag to orbit · Pinch to zoom'
@@ -32,26 +34,28 @@ if (!splatUrl) {
 }
 
 async function init(url) {
-  const viewer = new GaussianSplats3D.Viewer({
-    selfDrivenMode:        true,
-    useBuiltInControls:    true,
-    sharedMemoryForWorkers: false, // required for cross-origin iframe compatibility
-    dynamicScene:          false,
-    cameraUp:              [0, -1, 0],
-    initialCameraPosition,
-    initialCameraLookAt,
-  });
+  const options = {
+    selfDrivenMode:     true,
+    useBuiltInControls: true,
+  };
+
+  // Only override camera if URL params are explicitly provided;
+  // otherwise let GaussianSplats3D use its own defaults which suit its demo data.
+  const camPos  = parseVec3(camPosParam, null);
+  const camLook = parseVec3(camLookParam, null);
+  if (camPos)  options.initialCameraPosition = camPos;
+  if (camLook) options.initialCameraLookAt   = camLook;
+
+  const viewer = new GaussianSplats3D.Viewer(options);
 
   await viewer.addSplatScene(url, {
     splatAlphaRemovalThreshold: 5,
     onProgress: (progress) => {
-      // progress may be 0–100 or 0–1 depending on the library version
-      const pct = (progress > 1 ? progress : progress * 100);
+      const pct = progress > 1 ? progress : progress * 100;
       progressBar.style.width = `${Math.min(Math.max(pct, 0), 100)}%`;
     },
   });
 
-  // Animate progress bar to full, then fade it out
   progressBar.style.width = '100%';
   setTimeout(() => {
     progressWrap.style.opacity = '0';
@@ -60,17 +64,14 @@ async function init(url) {
 
   viewer.start();
 
-  // Enable slow auto-orbit via OrbitControls.autoRotate
   const controls = viewer.controls;
   if (controls) {
     controls.autoRotate      = true;
     controls.autoRotateSpeed = 0.8;
   }
 
-  // Show hint once rendering begins
   requestAnimationFrame(() => hintEl.classList.add('visible'));
 
-  // On first user interaction: stop orbit, hide hint
   let interacted = false;
   const onInteract = () => {
     if (interacted) return;
@@ -84,7 +85,6 @@ async function init(url) {
     window.addEventListener(evt, onInteract, { once: true, passive: true })
   );
 
-  // Auto-hide hint after 4 s even without interaction
   setTimeout(() => { if (!interacted) onInteract(); }, 4000);
 }
 
