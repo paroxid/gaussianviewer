@@ -48,7 +48,7 @@ async function init(url) {
 
   const viewer = new GaussianSplats3D.Viewer(options);
 
-  await viewer.addSplatScene(url, {
+  await viewer.addSplatScene(new URL(url, document.baseURI).href, {
     splatAlphaRemovalThreshold: 5,
     onProgress: (progress) => {
       const pct = progress > 1 ? progress : progress * 100;
