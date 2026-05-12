@@ -67,10 +67,6 @@ async function init(url) {
     controls.autoRotateSpeed = 0.8;
   }
 
-  // Trigger resize so the canvas fills the viewport on load
-  handleResize(viewer);
-  window.addEventListener('resize', () => handleResize(viewer));
-
   // Show hint once rendering begins
   requestAnimationFrame(() => hintEl.classList.add('visible'));
 
@@ -90,19 +86,6 @@ async function init(url) {
 
   // Auto-hide hint after 4 s even without interaction
   setTimeout(() => { if (!interacted) onInteract(); }, 4000);
-}
-
-function handleResize(viewer) {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  if (viewer.renderer) {
-    viewer.renderer.setSize(w, h);
-    viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  }
-  if (viewer.camera) {
-    viewer.camera.aspect = w / h;
-    viewer.camera.updateProjectionMatrix();
-  }
 }
 
 function showError(msg) {
