@@ -6,6 +6,10 @@
   <meta name="color-scheme" content="dark">
   <title>Gaussian Splat Viewer</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Enables SharedArrayBuffer (required by GaussianSplats3D's sort worker) by
+       injecting COOP/COEP headers via a service worker on hosts like GitHub Pages
+       that don't set them natively. Self-registers on first load then reloads. -->
+  <script src="coi-serviceworker.js"></script>
   <!--
     iframe embedding:
     <iframe src="index.html?url=https://example.com/scene.splat" allow="fullscreen" style="width:100%;height:100%;border:none;"></iframe>
